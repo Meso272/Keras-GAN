@@ -204,4 +204,4 @@ class WGAN():
 
 if __name__ == '__main__':
     wgan = WGAN()
-    wgan.train(epochs=4000, batch_size=32, save_interval=50)
+    wgan.train(epochs=40000, batch_size=32, save_interval=1000)
