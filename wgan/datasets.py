@@ -15,7 +15,11 @@ def load_CLDHGH_orig(path,size=32,filenum=63,scale=True):
         array=np.fromfile(filepath,dtype=np.float32).reshape((height,width))
         #print(array)
         for x in range(0,height,size):
+            if x+size>height:
+                continue
             for y in range(0,width,size):
+                if y+size>width:
+                    continue
                 #print(array[x:x+size,y:y+size])
                 picts.append(array[x:x+size,y:y+size])
     picts=np.array(picts)
@@ -35,7 +39,11 @@ def load_CLDHGH_decomp(path,size=32,filenum=63,scale=True):
         filepath=os.path.join(path,filename)
         array=np.fromfile(filepath,dtype=np.float32).reshape((height,width))
         for x in range(0,height,size):
+            if x+size>height:
+                continue
             for y in range(0,width,size):
+                if y+size>width:
+                    continue
                 picts.append(array[x:x+size,y:y+size])
     picts=np.array(picts)
     if scale:
