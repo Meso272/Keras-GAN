@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 import sys
 
-from data.datasets import * 
+from datasets import * 
 import numpy as np
 
 class WGAN():
