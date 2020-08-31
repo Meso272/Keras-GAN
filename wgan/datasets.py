@@ -2,7 +2,7 @@ import numpy as np
 import os 
 
 
-def load_CLDHGH_orig(path,size=30,filenum=63,scale=True):
+def load_CLDHGH_orig(path,size=32,filenum=63,scale=True):
     height=1800
     width=3600
     picts=[]
@@ -23,7 +23,7 @@ def load_CLDHGH_orig(path,size=30,filenum=63,scale=True):
         picts=(picts-0.5)*2
     return picts
 
-def load_CLDHGH_decomp(path,size=30,filenum=63,scale=True):
+def load_CLDHGH_decomp(path,size=32,filenum=63,scale=True):
     height=1800
     width=3600
     picts=[]
