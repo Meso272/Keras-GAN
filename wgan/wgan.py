@@ -163,7 +163,7 @@ class WGAN():
                 # ---------------------
 
                 # Select a random batch of images
-                idx = np.random.randint(0, X_train.shape[0], batch_size)
+                idx = np.random.randint(0, orig_imgs,shape[0], batch_size)
                 orig_imgs = orig_train[idx]
                 orig_imgs = np.expand_dims(orig_imgs, axis=3)
                 decomp_imgs=decomp_train[idx]
