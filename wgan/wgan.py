@@ -74,15 +74,15 @@ class WGAN():
         model.add(BatchNormalization(momentum=0.8))
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dropout(0.25))
-        model.add(Conv2D(128, kernel_size=3, strides=1, padding="same"))
+        model.add(Conv2D(128, kernel_size=3, strides=2, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dropout(0.25))
-        model.add(Flatten())
+        #model.add(Flatten())
 
 
-        model.add(Dense(128 * 2 * 2, activation="relu", input_dim=self.latent_dim))
-        model.add(Reshape((2, 2, 128)))
+        #model.add(Dense(128 * 2 * 2, activation="relu", input_dim=self.latent_dim))
+        #model.add(Reshape((2, 2, 128)))
 
         model.add(UpSampling2D())
         model.add(Conv2D(128, kernel_size=4, padding="same"))
@@ -190,7 +190,7 @@ class WGAN():
             #  Train Generator
             # ---------------------
 
-            g_loss = self.combined.train_on_batch(noise, valid)
+            g_loss = self.combined.train_on_batch(decomp_imgs, valid)
 
             # Plot the progress
             print ("%d [D loss: %f] [G loss: %f]" % (epoch, 1 - d_loss[0], 1 - g_loss[0]))
