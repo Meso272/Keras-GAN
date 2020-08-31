@@ -16,7 +16,7 @@ def load_CLDHGH_orig(path,size=30,filenum=63,scale=True):
         #print(array)
         for x in range(0,height,size):
             for y in range(0,width,size):
-                print(array[x:x+size,y:y+size])
+                #print(array[x:x+size,y:y+size])
                 picts.append(array[x:x+size,y:y+size])
     picts=np.array(picts)
     if scale:
