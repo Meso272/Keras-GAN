@@ -42,7 +42,7 @@ class DCGAN():
         self.discriminator.trainable = False
 
         # The discriminator takes generated images as input and determines validity
-        valid = self.critic(recov_img)
+        valid = self.discriminator(recov_img)
 
         # The combined model  (stacked generator and discriminator)
         # Trains the generator to fool the discriminator
@@ -141,40 +141,40 @@ class DCGAN():
         decomp_train=load_CLDHGH_decomp(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH_SZ/",size=64,endnum=50)
         
         # Adversarial ground truths
-        valid = -np.ones((batch_size, 1))
-        fake = np.ones((batch_size, 1))
+        valid = np.ones((batch_size, 1))
+        fake = np.zeros((batch_size, 1))
 
         for epoch in range(epochs):
 
-            for _ in range(self.n_critic):
-
+          
                 # ---------------------
                 #  Train Discriminator
                 # ---------------------
 
                 # Select a random batch of images
-                idx = np.random.randint(0, orig_train.shape[0], batch_size)
-                orig_imgs = orig_train[idx]
-                orig_imgs = np.expand_dims(orig_imgs, axis=3)
-                decomp_imgs=decomp_train[idx]
-                decomp_imgs = np.expand_dims(decomp_imgs, axis=3)
+            idx = np.random.randint(0, orig_train.shape[0], batch_size)
+            orig_imgs = orig_train[idx]
+            orig_imgs = np.expand_dims(orig_imgs, axis=3)
+            decomp_imgs=decomp_train[idx]
+            decomp_imgs = np.expand_dims(decomp_imgs, axis=3)
                 # Sample noise as generator input
                 #noise = np.random.normal(0, 1, (batch_size, self.latent_dim))
 
                 # Generate a batch of new images
-                recov_imgs = self.generator.predict(decomp_imgs)
+            recov_imgs = self.generator.predict(decomp_imgs)
 
                 # Train the critic
-                d_loss_real = self.critic.train_on_batch(orig_imgs, valid)
-                d_loss_fake = self.critic.train_on_batch(recov_imgs, fake)
-                d_loss = 0.5 * np.add(d_loss_fake, d_loss_real)
+            d_loss_real = self.discriminator.train_on_batch(orig_imgs, valid)
+            d_loss_fake = self.discriminator.train_on_batch(recov_imgs, fake)
+            d_loss = 0.5 * np.add(d_loss_fake, d_loss_real)
 
                 # Clip critic weights
-                for l in self.critic.layers:
-                    weights = l.get_weights()
-                    weights = [np.clip(w, -self.clip_value, self.clip_value) for w in weights]
-                    l.set_weights(weights)
-
+                '''
+            for l in self.discriminator.layers:
+                weights = l.get_weights()
+                weights = [np.clip(w, -self.clip_value, self.clip_value) for w in weights]
+                l.set_weights(weights)
+            '''
 
             # ---------------------
             #  Train Generator
