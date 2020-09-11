@@ -19,8 +19,8 @@ import numpy as np
 
 class WGAN():
     def __init__(self):
-        self.img_rows = 32
-        self.img_cols = 32
+        self.img_rows = 64
+        self.img_cols = 64
         self.channels = 1
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
         self.latent_dim = 128
@@ -28,7 +28,7 @@ class WGAN():
         # Following parameter and optimizer set as recommended in paper
         self.n_critic = 5
         self.clip_value = 0.01
-        optimizer = RMSprop(lr=0.00005)
+        optimizer = RMSprop(lr=0.00005)#original 0.00005
 
         # Build and compile the critic
         self.critic = self.build_critic()
@@ -62,12 +62,8 @@ class WGAN():
 
         model = Sequential()
         
-        model.add(Conv2D(16, kernel_size=3, strides=2, input_shape=self.img_shape, padding="same"))
+        model.add(Conv2D(32, kernel_size=3, strides=2, input_shape=self.img_shape, padding="same"))
         #model.add(ZeroPadding2D(padding=((0,1),(0,1))))
-        model.add(LeakyReLU(alpha=0.2))
-        model.add(Dropout(0.25))
-        model.add(Conv2D(32, kernel_size=3, strides=2, padding="same"))
-        model.add(BatchNormalization(momentum=0.8))
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dropout(0.25))
         model.add(Conv2D(64, kernel_size=3, strides=2, padding="same"))
@@ -78,6 +74,10 @@ class WGAN():
         model.add(BatchNormalization(momentum=0.8))
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dropout(0.25))
+        model.add(Conv2D(256, kernel_size=3, strides=2, padding="same"))
+        model.add(BatchNormalization(momentum=0.8))
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.25))
         #model.add(Flatten())
 
 
@@ -85,26 +85,26 @@ class WGAN():
         #model.add(Reshape((2, 2, 128)))
 
         model.add(UpSampling2D())
-        model.add(Conv2D(128, kernel_size=4, padding="same"))
+        model.add(Conv2D(256, kernel_size=3, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
         model.add(Activation("relu"))
 
         model.add(UpSampling2D())
-        model.add(Conv2D(64, kernel_size=4, padding="same"))
+        model.add(Conv2D(128, kernel_size=3, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
         model.add(Activation("relu"))
 
         model.add(UpSampling2D())
-        model.add(Conv2D(32, kernel_size=4, padding="same"))
+        model.add(Conv2D(64, kernel_size=3, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
         model.add(Activation("relu"))
 
         model.add(UpSampling2D())
-        model.add(Conv2D(16, kernel_size=4, padding="same"))
+        model.add(Conv2D(32, kernel_size=3, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
         model.add(Activation("relu"))
 
-        model.add(Conv2D(self.channels, kernel_size=4, padding="same"))
+        model.add(Conv2D(self.channels, kernel_size=3, padding="same"))
         model.add(Activation("tanh"))
 
         model.summary()
@@ -118,19 +118,19 @@ class WGAN():
 
         model = Sequential()
 
-        model.add(Conv2D(16, kernel_size=3, strides=2, input_shape=self.img_shape, padding="same"))
-        model.add(LeakyReLU(alpha=0.2))
-        model.add(Dropout(0.25))
-        model.add(Conv2D(32, kernel_size=3, strides=2, padding="same"))
-        model.add(ZeroPadding2D(padding=((0,1),(0,1))))
-        model.add(BatchNormalization(momentum=0.8))
+        model.add(Conv2D(32, kernel_size=3, strides=2, input_shape=self.img_shape, padding="same"))
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dropout(0.25))
         model.add(Conv2D(64, kernel_size=3, strides=2, padding="same"))
+        #model.add(ZeroPadding2D(padding=((0,1),(0,1))))
         model.add(BatchNormalization(momentum=0.8))
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dropout(0.25))
-        model.add(Conv2D(128, kernel_size=3, strides=1, padding="same"))
+        model.add(Conv2D(128, kernel_size=3, strides=2, padding="same"))
+        model.add(BatchNormalization(momentum=0.8))
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.25))
+        model.add(Conv2D(256, kernel_size=3, strides=1, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dropout(0.25))
@@ -147,8 +147,8 @@ class WGAN():
     def train(self, epochs, batch_size=128, save_interval=50):
 
         # Load the dataset
-        orig_train=load_CLDHGH_orig(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH/",endnum=50)
-        decomp_train=load_CLDHGH_decomp(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH_SZ/",endnum=50)
+        orig_train=load_CLDHGH_orig(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH/",endnum=50,size=64)
+        decomp_train=load_CLDHGH_decomp(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH_SZ/",endnum=50,size=64)
         
         # Adversarial ground truths
         valid = -np.ones((batch_size, 1))
@@ -204,4 +204,4 @@ class WGAN():
 
 if __name__ == '__main__':
     wgan = WGAN()
-    wgan.train(epochs=40000, batch_size=32, save_interval=1000)
+    wgan.train(epochs=200000, batch_size=32, save_interval=1000)
