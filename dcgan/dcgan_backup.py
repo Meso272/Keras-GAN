@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import sys
 
 import numpy as np
-from datasets import * 
+
 class DCGAN():
     def __init__(self):
         # Input shape

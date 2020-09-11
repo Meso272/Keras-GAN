@@ -183,8 +183,7 @@ class DCGAN():
             g_loss = self.combined.train_on_batch(decomp_imgs, valid)
 
             # Plot the progress
-            print ("%d [D loss: %f] [G loss: %f]" % (epoch, 1 - d_loss[0], 1 - g_loss[0]))
-
+            print ("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100*d_loss[1], g_loss))
             # If at save interval => save generated image samples
             if epoch % save_interval == 0:
                 self.generator.save("generator.h5")
