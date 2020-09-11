@@ -169,7 +169,7 @@ class DCGAN():
             d_loss = 0.5 * np.add(d_loss_fake, d_loss_real)
 
                 # Clip critic weights
-                '''
+            '''
             for l in self.discriminator.layers:
                 weights = l.get_weights()
                 weights = [np.clip(w, -self.clip_value, self.clip_value) for w in weights]
