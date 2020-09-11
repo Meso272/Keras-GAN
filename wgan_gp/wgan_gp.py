@@ -24,7 +24,7 @@ class RandomWeightedAverage(_Merge):
         alpha = K.random_uniform((32, 1, 1, 1))
         return (alpha * inputs[0]) + ((1 - alpha) * inputs[1])
 
-class WGAN():
+class WGANGP():
     def __init__(self):
         self.img_rows = 64
         self.img_cols = 64
@@ -234,7 +234,7 @@ class WGAN():
             #  Train Generator
             # ---------------------
 
-            g_loss = self.combined.train_on_batch(decomp_imgs, valid)
+            g_loss = self.generator_model.train_on_batch(decomp_imgs, valid)
 
             # Plot the progress
             print ("%d [D loss: %f] [G loss: %f]" % (epoch, d_loss[0], g_loss))
