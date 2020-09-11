@@ -87,7 +87,7 @@ class WGAN():
     def wasserstein_loss(self, y_true, y_pred):
         return K.mean(y_true * y_pred)
 
-     def gradient_penalty_loss(self, y_true, y_pred, averaged_samples):
+    def gradient_penalty_loss(self, y_true, y_pred, averaged_samples):
         """
         Computes gradient penalty based on prediction and weighted real / fake samples
         """
