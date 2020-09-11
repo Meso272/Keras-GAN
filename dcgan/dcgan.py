@@ -21,7 +21,7 @@ class DCGAN():
         self.img_cols = 64
         self.channels = 1
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
-        self.latent_dim = 100
+        self.latent_dim = 128
 
         optimizer = Adam(0.0002, 0.5)
 
@@ -35,18 +35,18 @@ class DCGAN():
         self.generator = self.build_generator()
 
         # The generator takes noise as input and generates imgs
-        z = Input(shape=(self.latent_dim,))
-        img = self.generator(z)
+        decomp_img =  Input(shape=self.img_shape)
+        recov_img = self.generator(decomp_img)
 
         # For the combined model we will only train the generator
         self.discriminator.trainable = False
 
         # The discriminator takes generated images as input and determines validity
-        valid = self.discriminator(img)
+        valid = self.critic(recov_img)
 
         # The combined model  (stacked generator and discriminator)
         # Trains the generator to fool the discriminator
-        self.combined = Model(z, valid)
+        self.combined = Model(decomp_img, valid)
         self.combined.compile(loss='binary_crossentropy', optimizer=optimizer)
 
     def build_generator(self):
@@ -137,8 +137,8 @@ class DCGAN():
 
     def train(self, epochs, batch_size=128, save_interval=50):
 
-        orig_train=load_CLDHGH_orig(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH/",endnum=50)
-        decomp_train=load_CLDHGH_decomp(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH_SZ/",endnum=50)
+        orig_train=load_CLDHGH_orig(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH/",size=64,endnum=50)
+        decomp_train=load_CLDHGH_decomp(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH_SZ/",size=64,endnum=50)
         
         # Adversarial ground truths
         valid = -np.ones((batch_size, 1))
