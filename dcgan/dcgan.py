@@ -195,4 +195,4 @@ class DCGAN():
 
 if __name__ == '__main__':
     dcgan = DCGAN()
-    dcgan.train(epochs=40000, batch_size=32, save_interval=50)
+    dcgan.train(epochs=400000, batch_size=32, save_interval=50)
