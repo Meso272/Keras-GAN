@@ -13,76 +13,121 @@ import matplotlib.pyplot as plt
 import sys
 
 import numpy as np
-
-class LSGAN():
+from datasets import * 
+class DCGAN():
     def __init__(self):
-        self.img_rows = 28
-        self.img_cols = 28
+        # Input shape
+        self.img_rows = 64
+        self.img_cols = 64
         self.channels = 1
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
-        self.latent_dim = 100
+        self.latent_dim = 128
 
         optimizer = Adam(0.0002, 0.5)
 
         # Build and compile the discriminator
         self.discriminator = self.build_discriminator()
-        self.discriminator.compile(loss='mse',
+        self.discriminator.compile(loss='binary_crossentropy',
             optimizer=optimizer,
             metrics=['accuracy'])
 
         # Build the generator
         self.generator = self.build_generator()
 
-        # The generator takes noise as input and generated imgs
-        z = Input(shape=(self.latent_dim,))
-        img = self.generator(z)
+        # The generator takes noise as input and generates imgs
+        decomp_img =  Input(shape=self.img_shape)
+        recov_img = self.generator(decomp_img)
 
         # For the combined model we will only train the generator
         self.discriminator.trainable = False
 
-        # The valid takes generated images as input and determines validity
-        valid = self.discriminator(img)
+        # The discriminator takes generated images as input and determines validity
+        valid = self.discriminator(recov_img)
 
         # The combined model  (stacked generator and discriminator)
-        # Trains generator to fool discriminator
-        self.combined = Model(z, valid)
-        # (!!!) Optimize w.r.t. MSE loss instead of crossentropy
+        # Trains the generator to fool the discriminator
+        self.combined = Model(decomp_img, valid)
         self.combined.compile(loss='mse', optimizer=optimizer)
 
     def build_generator(self):
 
         model = Sequential()
+        
+        model.add(Conv2D(16, kernel_size=3, strides=2, input_shape=self.img_shape, padding="same"))
+        #model.add(ZeroPadding2D(padding=((0,1),(0,1))))
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.25))
+        model.add(Conv2D(32, kernel_size=3, strides=2, padding="same"))
+        model.add(BatchNormalization(momentum=0.8))
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.25))
+        model.add(Conv2D(64, kernel_size=3, strides=2, padding="same"))
+        model.add(BatchNormalization(momentum=0.8))
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.25))
+        model.add(Conv2D(128, kernel_size=3, strides=2, padding="same"))
+        model.add(BatchNormalization(momentum=0.8))
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.25))
+        #model.add(Flatten())
 
-        model.add(Dense(256, input_dim=self.latent_dim))
-        model.add(LeakyReLU(alpha=0.2))
+
+        #model.add(Dense(128 * 2 * 2, activation="relu", input_dim=self.latent_dim))
+        #model.add(Reshape((2, 2, 128)))
+
+        model.add(UpSampling2D())
+        model.add(Conv2D(128, kernel_size=4, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
-        model.add(Dense(512))
-        model.add(LeakyReLU(alpha=0.2))
+        model.add(Activation("relu"))
+
+        model.add(UpSampling2D())
+        model.add(Conv2D(64, kernel_size=4, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
-        model.add(Dense(1024))
-        model.add(LeakyReLU(alpha=0.2))
+        model.add(Activation("relu"))
+
+        model.add(UpSampling2D())
+        model.add(Conv2D(32, kernel_size=4, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
-        model.add(Dense(np.prod(self.img_shape), activation='tanh'))
-        model.add(Reshape(self.img_shape))
+        model.add(Activation("relu"))
+
+        model.add(UpSampling2D())
+        model.add(Conv2D(16, kernel_size=4, padding="same"))
+        model.add(BatchNormalization(momentum=0.8))
+        model.add(Activation("relu"))
+
+        model.add(Conv2D(self.channels, kernel_size=4, padding="same"))
+        model.add(Activation("tanh"))
 
         model.summary()
 
-        noise = Input(shape=(self.latent_dim,))
-        img = model(noise)
+        decomp_img = Input(shape=self.img_shape)
+        recov_img = model(decomp_img)
 
-        return Model(noise, img)
+        return Model(decomp_img, recov_img)
 
     def build_discriminator(self):
 
         model = Sequential()
 
-        model.add(Flatten(input_shape=self.img_shape))
-        model.add(Dense(512))
+        model.add(Conv2D(32, kernel_size=3, strides=2, input_shape=self.img_shape, padding="same"))
         model.add(LeakyReLU(alpha=0.2))
-        model.add(Dense(256))
+        model.add(Dropout(0.25))
+        model.add(Conv2D(64, kernel_size=3, strides=2, padding="same"))
+        model.add(ZeroPadding2D(padding=((0,1),(0,1))))
+        model.add(BatchNormalization(momentum=0.8))
         model.add(LeakyReLU(alpha=0.2))
-        # (!!!) No softmax
-        model.add(Dense(1))
+        model.add(Dropout(0.25))
+        model.add(Conv2D(128, kernel_size=3, strides=2, padding="same"))
+        model.add(BatchNormalization(momentum=0.8))
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.25))
+        model.add(Conv2D(256, kernel_size=3, strides=1, padding="same"))
+        model.add(BatchNormalization(momentum=0.8))
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.25))
+        model.add(Flatten())
+        model.add(Dense(1, activation='sigmoid'))
+
         model.summary()
 
         img = Input(shape=self.img_shape)
@@ -90,73 +135,64 @@ class LSGAN():
 
         return Model(img, validity)
 
-    def train(self, epochs, batch_size=128, sample_interval=50):
+    def train(self, epochs, batch_size=128, save_interval=50):
 
-        # Load the dataset
-        (X_train, _), (_, _) = mnist.load_data()
-
-        # Rescale -1 to 1
-        X_train = (X_train.astype(np.float32) - 127.5) / 127.5
-        X_train = np.expand_dims(X_train, axis=3)
-
+        orig_train=load_CLDHGH_orig(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH/",size=64,endnum=50)
+        decomp_train=load_CLDHGH_decomp(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH_SZ/",size=64,endnum=50)
+        
         # Adversarial ground truths
         valid = np.ones((batch_size, 1))
         fake = np.zeros((batch_size, 1))
 
         for epoch in range(epochs):
 
-            # ---------------------
-            #  Train Discriminator
-            # ---------------------
+          
+                # ---------------------
+                #  Train Discriminator
+                # ---------------------
 
-            # Select a random batch of images
-            idx = np.random.randint(0, X_train.shape[0], batch_size)
-            imgs = X_train[idx]
+                # Select a random batch of images
+            idx = np.random.randint(0, orig_train.shape[0], batch_size)
+            orig_imgs = orig_train[idx]
+            orig_imgs = np.expand_dims(orig_imgs, axis=3)
+            decomp_imgs=decomp_train[idx]
+            decomp_imgs = np.expand_dims(decomp_imgs, axis=3)
+                # Sample noise as generator input
+                #noise = np.random.normal(0, 1, (batch_size, self.latent_dim))
 
-            # Sample noise as generator input
-            noise = np.random.normal(0, 1, (batch_size, self.latent_dim))
+                # Generate a batch of new images
+            recov_imgs = self.generator.predict(decomp_imgs)
 
-            # Generate a batch of new images
-            gen_imgs = self.generator.predict(noise)
+                # Train the critic
+            d_loss_real = self.discriminator.train_on_batch(orig_imgs, valid)
+            d_loss_fake = self.discriminator.train_on_batch(recov_imgs, fake)
+            d_loss = 0.5 * np.add(d_loss_fake, d_loss_real)
 
-            # Train the discriminator
-            d_loss_real = self.discriminator.train_on_batch(imgs, valid)
-            d_loss_fake = self.discriminator.train_on_batch(gen_imgs, fake)
-            d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
-
+                # Clip critic weights
+            '''
+            for l in self.discriminator.layers:
+                weights = l.get_weights()
+                weights = [np.clip(w, -self.clip_value, self.clip_value) for w in weights]
+                l.set_weights(weights)
+            '''
 
             # ---------------------
             #  Train Generator
             # ---------------------
 
-            g_loss = self.combined.train_on_batch(noise, valid)
+            g_loss = self.combined.train_on_batch(decomp_imgs, valid)
 
             # Plot the progress
             print ("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100*d_loss[1], g_loss))
-
             # If at save interval => save generated image samples
-            if epoch % sample_interval == 0:
-                self.sample_images(epoch)
+            if epoch % save_interval == 0:
+                self.generator.save("generator.h5")
 
-    def sample_images(self, epoch):
-        r, c = 5, 5
-        noise = np.random.normal(0, 1, (r * c, self.latent_dim))
-        gen_imgs = self.generator.predict(noise)
+    
 
-        # Rescale images 0 - 1
-        gen_imgs = 0.5 * gen_imgs + 0.5
 
-        fig, axs = plt.subplots(r, c)
-        cnt = 0
-        for i in range(r):
-            for j in range(c):
-                axs[i,j].imshow(gen_imgs[cnt, :,:,0], cmap='gray')
-                axs[i,j].axis('off')
-                cnt += 1
-        fig.savefig("images/mnist_%d.png" % epoch)
-        plt.close()
 
 
 if __name__ == '__main__':
-    gan = LSGAN()
-    gan.train(epochs=30000, batch_size=32, sample_interval=200)
+    dcgan = DCGAN()
+    dcgan.train(epochs=300000, batch_size=32, save_interval=50)
