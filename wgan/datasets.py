@@ -2,11 +2,11 @@ import numpy as np
 import os 
 
 
-def load_CLDHGH_orig(path,size=32,filenum=63,scale=True):
+def load_CLDHGH_orig(path,size=32,startnum=0,endnum=50,scale=True):
     height=1800
     width=3600
     picts=[]
-    for i in range(filenum):
+    for i in range(startnum,endnum):
         s=str(i)
         if i<10:
             s="0"+s
@@ -27,11 +27,11 @@ def load_CLDHGH_orig(path,size=32,filenum=63,scale=True):
         picts=(picts-0.5)*2
     return picts
 
-def load_CLDHGH_decomp(path,size=32,filenum=63,scale=True):
+def load_CLDHGH_decomp(path,size=32,startnum=0,endnum=50,scale=True):
     height=1800
     width=3600
     picts=[]
-    for i in range(filenum):
+    for i in range(startnum,endnum):
         s=str(i)
         if i<10:
             s="0"+s
