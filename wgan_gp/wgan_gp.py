@@ -58,7 +58,7 @@ class WGAN():
         # The critic takes generated images as input and determines validity
         fake=self.critic(recov_img)
         valid = self.critic(orig_img)
-        interpolated_img = RandomWeightedAverage()([real_img, fake_img])
+        interpolated_img = RandomWeightedAverage()([orig_img, recov_img])
         validity_interpolated = self.critic(interpolated_img)
         # The combined model  (stacked generator and critic)
         partial_gp_loss = partial(self.gradient_penalty_loss,
