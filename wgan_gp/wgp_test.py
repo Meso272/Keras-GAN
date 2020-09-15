@@ -21,6 +21,8 @@ decomp_test = np.expand_dims(decomp_test, axis=3)
 model=load_model("generator.h5")
 
 recov_test=model.predict(decomp_test)
+print(recov_test.shape())
+
 decomp_test=decomp_test/2+0.5
 recov_test=recov_test/2+0.5
 print(mean_squared_error(orig_test.flatten(),decomp_test.flatten()))
