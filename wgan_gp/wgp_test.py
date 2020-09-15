@@ -33,6 +33,8 @@ recov_test=np.squeeze(recov_test,axis=3)
 size=64
 startnum=50
 endnum=63
+height=1800
+width=3600
 path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH_SZ/"
 outpath="images/"
 idx=0
