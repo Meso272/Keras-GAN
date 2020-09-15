@@ -7,5 +7,7 @@
 *.hdf5
 .DS_Store
 */datasets
-
+*.dat
+*.sz
+*.out
 __pycache__

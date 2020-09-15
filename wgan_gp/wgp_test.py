@@ -21,9 +21,40 @@ decomp_test = np.expand_dims(decomp_test, axis=3)
 model=load_model("generator.h5")
 
 recov_test=model.predict(decomp_test)
-print(recov_test.shape)
+#print(recov_test.shape)
 
 decomp_test=decomp_test/2+0.5
 recov_test=recov_test/2+0.5
 print(mean_squared_error(orig_test.flatten(),decomp_test.flatten()))
 print(mean_squared_error(orig_test.flatten(),recov_test.flatten()))
+
+
+recov_test=np.squeeze(recov_test,axis=3)
+size=64
+startnum=50
+endnum=63
+path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH_SZ/"
+outpath="images/"
+idx=0
+for i in range(startnum,endnum):
+    s=str(i)
+    if i<10:
+        s="0"+s
+    filename="CLDHGH_%s.dat.sz.out" % s
+    filepath=os.path.join(path,filename)
+    array=np.fromfile(filepath,dtype=np.float32).reshape((height,width))
+        #print(array)
+    for x in range(0,height,size):
+        if x+size>height:
+            continue
+        for y in range(0,width,size):
+            if y+size>width:
+                continue
+                #print(array[x:x+size,y:y+size])
+
+            array[x:x+size,y:y+size]=recov_test[idx]
+            idx=idx+1
+
+    outname="CLDHGH_%s_recov.dat" % s
+    outpath=os.path.join(outpath,outname)
+    array.tofile(outpath)
