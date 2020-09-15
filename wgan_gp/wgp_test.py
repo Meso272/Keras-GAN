@@ -36,7 +36,7 @@ endnum=63
 height=1800
 width=3600
 path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH_SZ/"
-outpath="images/"
+outfolder="images/"
 idx=0
 for i in range(startnum,endnum):
     s=str(i)
@@ -58,5 +58,5 @@ for i in range(startnum,endnum):
             idx=idx+1
 
     outname="CLDHGH_%s_recov.dat" % s
-    outpath=os.path.join(outpath,outname)
+    outpath=os.path.join(outfolder,outname)
     array.tofile(outpath)
