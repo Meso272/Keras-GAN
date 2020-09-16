@@ -49,13 +49,3 @@ def load_CLDHGH_decomp(path,size=32,startnum=0,endnum=50,scale=True):
     if scale:
         picts=(picts-0.5)*2
     return picts
-
-
-path1="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH/"
-path2="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH_SZ/"
-
-a1=load_CLDHGH_orig(path1)
-a2=load_CLDHGH_decomp(path2)
-
-print(a1.shape)
-print(a2.shape)
