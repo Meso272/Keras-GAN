@@ -196,8 +196,8 @@ class WGANGP():
     def train(self, epochs, batch_size=128, save_interval=50):
 
         # Load the dataset
-        orig_train=load_CLDHGH_orig(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH/",endnum=50,size=64)
-        decomp_train=load_CLDHGH_decomp(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH_SZ/",endnum=50,size=64)
+        orig_train=load_CLDHGH_orig(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH/",startnum=52,endnum=62,size=64)
+        decomp_train=load_CLDHGH_decomp(path="../compress",startnum=52,endnum=62,size=64)
         
         # Adversarial ground truths
         valid = -np.ones((batch_size, 1))

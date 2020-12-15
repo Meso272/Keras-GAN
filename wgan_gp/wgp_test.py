@@ -14,8 +14,8 @@ from sklearn.metrics import mean_squared_error
 from datasets import * 
 import numpy as np
 
-orig_test=load_CLDHGH_orig(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH/",startnum=50,endnum=63,scale=False,size=64)
-decomp_test=load_CLDHGH_decomp(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH_SZ/",startnum=50,endnum=63,size=64)
+orig_test=load_CLDHGH_orig(path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH/",startnum=62,endnum=63,scale=False,size=64)
+decomp_test=load_CLDHGH_decomp(path="../compress",startnum=62,endnum=63,size=64)
 orig_test = np.expand_dims(orig_test, axis=3)
 decomp_test = np.expand_dims(decomp_test, axis=3)
 model=load_model("generator.h5")
@@ -31,7 +31,7 @@ print(mean_squared_error(orig_test.flatten(),recov_test.flatten()))
 
 recov_test=np.squeeze(recov_test,axis=3)
 size=64
-startnum=50
+startnum=62
 endnum=63
 height=1800
 width=3600

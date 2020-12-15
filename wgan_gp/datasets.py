@@ -35,7 +35,7 @@ def load_CLDHGH_decomp(path,size=32,startnum=0,endnum=50,scale=True):
         s=str(i)
         if i<10:
             s="0"+s
-        filename="CLDHGH_%s.dat.sz.out" % s
+        filename="%swaerbfr2.dat" % s
         filepath=os.path.join(path,filename)
         array=np.fromfile(filepath,dtype=np.float32).reshape((height,width))
         for x in range(0,height,size):
@@ -51,3 +51,11 @@ def load_CLDHGH_decomp(path,size=32,startnum=0,endnum=50,scale=True):
     return picts
 
 
+#path1="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH/"
+#path2="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH_SZ/"
+
+#a1=load_CLDHGH_orig(path1)
+#a2=load_CLDHGH_decomp(path2)
+
+#print(a1.shape)
+#print(a2.shape)
