@@ -42,7 +42,7 @@ for i in range(startnum,endnum):
     s=str(i)
     if i<10:
         s="0"+s
-    filename="CLDHGH_%s.dat.sz.out" % s
+    filename="CLDHGH_%s.dat" % s
     filepath=os.path.join(path,filename)
     array=np.fromfile(filepath,dtype=np.float32).reshape((height,width))
         #print(array)
