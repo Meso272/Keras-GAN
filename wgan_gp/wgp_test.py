@@ -35,7 +35,7 @@ startnum=62
 endnum=63
 height=1800
 width=3600
-path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH_SZ/"
+path="/home/jliu447/lossycompression/multisnapshot-data-cleaned/CLDHGH/"
 outfolder="images/"
 idx=0
 for i in range(startnum,endnum):
